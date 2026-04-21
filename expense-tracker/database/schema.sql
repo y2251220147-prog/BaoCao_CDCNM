@@ -2,6 +2,7 @@
 -- Expense Tracker Database Schema
 -- MySQL 8.0+
 -- =============================================
+SET NAMES utf8mb4;
 
 CREATE DATABASE IF NOT EXISTS expense_tracker
   CHARACTER SET utf8mb4
