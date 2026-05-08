@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard, ArrowLeftRight, Tag, PiggyBank, Activity,
+  LayoutDashboard, ArrowLeftRight, Tag, PiggyBank, Target, Activity, Moon, Sun,
 } from 'lucide-react';
 
 const links = [
@@ -8,9 +9,19 @@ const links = [
   { to: '/transactions', icon: ArrowLeftRight,  label: 'Giao dịch' },
   { to: '/categories',   icon: Tag,             label: 'Danh mục' },
   { to: '/budgets',      icon: PiggyBank,       label: 'Ngân sách' },
+  { to: '/goals',        icon: Target,          label: 'Mục tiêu' },
 ];
 
 export default function Sidebar() {
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
+
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">💰 ExpenseTracker</div>
@@ -27,6 +38,13 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
+      <div style={{ padding: '12px 24px' }}>
+        <button className="nav-item" onClick={toggleTheme} style={{ width: '100%', border: 'none', background: 'none' }}>
+          {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+          {theme === 'light' ? 'Chế độ tối' : 'Chế độ sáng'}
+        </button>
+      </div>
 
       <div style={{ marginTop: 'auto', padding: '0 24px 8px' }}>
         <NavLink to="/health" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>

@@ -4,6 +4,7 @@ import Dashboard    from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import Categories   from './pages/Categories';
 import Budgets      from './pages/Budgets';
+import Goals        from './pages/Goals';
 import HealthCheck  from './pages/HealthCheck';
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/transactions" element={<Transactions />} />
           <Route path="/categories"   element={<Categories />}   />
           <Route path="/budgets"      element={<Budgets />}      />
+          <Route path="/goals"        element={<Goals />}        />
           <Route path="/health"       element={<HealthCheck />}  />
         </Routes>
       </main>

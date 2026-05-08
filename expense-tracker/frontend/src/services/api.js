@@ -20,6 +20,12 @@ export const getBudgets       = (params) => api.get('/budgets', { params });
 export const upsertBudget     = (data)   => api.post('/budgets', data);
 export const deleteBudget     = (id)     => api.delete(`/budgets/${id}`);
 
+// ── Goals ─────────────────────────────────────────────────────────────────────
+export const getGoals         = ()       => api.get('/goals');
+export const createGoal       = (data)   => api.post('/goals', data);
+export const updateGoal       = (id, data) => api.put(`/goals/${id}`, data);
+export const deleteGoal       = (id)     => api.delete(`/goals/${id}`);
+
 // ── Health-check ──────────────────────────────────────────────────────────────
 export const checkHealth      = ()       => api.get('/health');
 
