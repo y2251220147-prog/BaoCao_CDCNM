@@ -1,0 +1,7 @@
+**/.env
+node_modules/
+mysql_data/
+dist/
+build/
+.DS_Store
+*.log
