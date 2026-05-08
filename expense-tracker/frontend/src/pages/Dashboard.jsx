@@ -1,28 +1,31 @@
 import { useEffect, useState } from 'react';
-import { getSummary, getTransactions } from '../services/api';
+import { getSummary, getTransactions, getBudgets } from '../services/api';
 import { formatCurrency, formatDate, currentMonth, StatusMap } from '../utils/helpers';
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
-import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, AlertTriangle } from 'lucide-react';
 
 const COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#06b6d4','#8b5cf6','#ec4899','#14b8a6'];
 
 export default function Dashboard() {
   const [summary, setSummary]   = useState(null);
   const [recent, setRecent]     = useState([]);
+  const [budgets, setBudgets]   = useState([]);
   const [loading, setLoading]   = useState(true);
-  const [month, setMonth] = useState(currentMonth());
+  const [month, setMonth]       = useState(currentMonth());
 
   useEffect(() => {
     setLoading(true);
     Promise.all([
       getSummary({ month }),
       getTransactions({ month }),
-    ]).then(([s, t]) => {
+      getBudgets({ month }),
+    ]).then(([s, t, b]) => {
       setSummary(s.data.data);
       setRecent(t.data.data.slice(0, 8));
+      setBudgets(b.data.data);
     }).finally(() => setLoading(false));
   }, [month]);
 
@@ -46,6 +49,23 @@ export default function Dashboard() {
         <input type="month" className="form-input" style={{ maxWidth: 180 }}
           value={month} onChange={e => setMonth(e.target.value)} />
       </div>
+
+      {/* Budget Alerts */}
+      {budgets.filter(b => parseFloat(b.spent) > parseFloat(b.amount)).length > 0 && (
+        <div className="card" style={{ borderLeft: '4px solid var(--danger)', marginBottom: 24, background: '#fef2f2' }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <AlertTriangle color="var(--danger)" size={20} />
+            <div>
+              <h4 style={{ color: '#991b1b', margin: 0, fontSize: '0.95rem' }}>Cảnh báo ngân sách</h4>
+              <p style={{ color: '#b91c1c', margin: '2px 0 0', fontSize: '0.85rem' }}>
+                Các danh mục sau đã chi vượt mức cho phép: {' '}
+                {budgets.filter(b => parseFloat(b.spent) > parseFloat(b.amount))
+                  .map(b => b.category_name).join(', ')}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stat Cards */}
       <div className="stats-grid">
