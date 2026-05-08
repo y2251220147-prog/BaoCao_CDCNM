@@ -74,3 +74,41 @@ npm run dev            # Chạy trên port 5173
 ### 4. Kiểm tra
 - Frontend: http://localhost:5173
 - Health: http://localhost:5000/api/health
+
+---
+
+## 🐳 Triển khai với Docker (Khuyên dùng)
+
+Dự án đã được cấu hình sẵn Docker để triển khai nhanh chóng và đồng bộ.
+
+### Các bước thực hiện:
+1. **Chuẩn bị file `.env`**: Tạo file `.env` tại thư mục gốc của project (đã được tạo sẵn với cấu hình mặc định).
+2. **Khởi chạy Docker Compose**:
+   ```bash
+   docker compose up -d
+   ```
+3. **Truy cập**:
+   - Frontend: `http://localhost:5173`
+   - Backend: `http://localhost:5000`
+
+---
+
+## 📝 Quy chuẩn Commit (Commit Fit)
+
+Để dự án chuyên nghiệp và dễ theo dõi, dự án áp dụng chuẩn **Conventional Commits**.
+
+### Cấu trúc thông điệp:
+`<type>: <mô tả ngắn bằng tiếng Việt hoặc tiếng Anh>`
+
+### Các loại (Types) phổ biến:
+- `feat`: Thêm tính năng mới.
+- `fix`: Sửa lỗi.
+- `docs`: Cập nhật tài liệu.
+- `style`: Thay đổi giao diện, định dạng code (không đổi logic).
+- `refactor`: Tối ưu hóa code.
+- `chore`: Các thay đổi nhỏ khác (cập nhật thư viện, cấu hình build...).
+
+**Ví dụ:** `feat: thêm chức năng lọc theo danh mục` hoặc `fix: sửa lỗi không hiển thị biểu đồ`.
+
+> [!NOTE]
+> Hệ thống sẽ tự động kiểm tra (Lint) khi bạn thực hiện lệnh `git commit`. Nếu thông điệp không đúng chuẩn, lệnh commit sẽ bị từ chối.
