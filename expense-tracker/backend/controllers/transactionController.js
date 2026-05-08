@@ -113,7 +113,17 @@ exports.getSummary = async (req, res) => {
       ORDER BY total DESC
     `);
 
-    res.json({ success: true, data: { ...rows[0], by_category: byCategory } });
+    const [dailyTrend] = await db.query(`
+      SELECT DATE_FORMAT(date, '%d/%m') AS day,
+             SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END) AS income,
+             SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS expense
+      FROM transactions
+      WHERE status != 'cancelled' ${filter}
+      GROUP BY day
+      ORDER BY date ASC
+    `);
+
+    res.json({ success: true, data: { ...rows[0], by_category: byCategory, daily_trend: dailyTrend } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

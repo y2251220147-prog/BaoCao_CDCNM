@@ -91,6 +91,32 @@ export default function Dashboard() {
 
       {/* Charts */}
       <div className="charts-grid">
+        {/* Daily Trend */}
+        <div className="card" style={{ gridColumn: 'span 2' }}>
+          <h3 style={{ marginBottom: 16, fontSize: '1rem', fontWeight: 600 }}>Xu hướng hàng ngày</h3>
+          {(summary?.daily_trend || []).length > 0 ? (
+            <ResponsiveContainer width="100%" height={260}>
+              <AreaChart data={summary.daily_trend}>
+                <defs>
+                  <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="day" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis stroke="var(--text-muted)" fontSize={11} tickFormatter={v => `${(v/1e6).toFixed(1)}M`} tickLine={false} axisLine={false} />
+                <Tooltip formatter={(v) => formatCurrency(v)} />
+                <Area type="monotone" dataKey="income" stroke="#10b981" fillOpacity={1} fill="url(#colorIncome)" name="Thu nhập" />
+                <Area type="monotone" dataKey="expense" stroke="#ef4444" fillOpacity={1} fill="url(#colorExpense)" name="Chi phí" />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : <div className="empty-state"><p>Không đủ dữ liệu để hiển thị biểu đồ</p></div>}
+        </div>
+
         {/* Expense by category pie */}
         <div className="card">
           <h3 style={{ marginBottom: 16, fontSize: '1rem', fontWeight: 600 }}>Chi phí theo danh mục</h3>
