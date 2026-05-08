@@ -15,9 +15,10 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
 app.use(express.json());
 
-// ── Health-check endpoint (REQUIRED) ──────────────────────────────────────────
+// ── Health-check endpoint (REQUIRED for DevOps) ─────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({
+    ok:        true,
     status:    'ok',
     timestamp: new Date().toISOString(),
     service:   'expense-tracker-api',

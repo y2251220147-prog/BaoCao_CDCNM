@@ -1,9 +1,9 @@
 const db = require('../config/db');
 
-// ─── GET all transactions (with filters) ──────────────────────────────────────
+// ─── GET all transactions (with filters & search) ──────────────────────────────
 exports.getAll = async (req, res) => {
   try {
-    const { type, category_id, month, status } = req.query;
+    const { type, category_id, month, status, q } = req.query;
     let sql = `
       SELECT t.*, c.name AS category_name, c.icon, c.color
       FROM transactions t
@@ -16,6 +16,7 @@ exports.getAll = async (req, res) => {
     if (category_id) { sql += ' AND t.category_id = ?'; params.push(category_id); }
     if (status)      { sql += ' AND t.status = ?';      params.push(status); }
     if (month)       { sql += ' AND DATE_FORMAT(t.date, "%Y-%m") = ?'; params.push(month); }
+    if (q)           { sql += ' AND t.description LIKE ?'; params.push(`%${q}%`); }
 
     sql += ' ORDER BY t.date DESC, t.created_at DESC';
 

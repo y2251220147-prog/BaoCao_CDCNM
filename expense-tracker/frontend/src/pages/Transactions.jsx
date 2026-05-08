@@ -6,7 +6,7 @@ import {
 import { formatCurrency, formatDate, StatusMap } from '../utils/helpers';
 import Modal from '../components/Modal';
 import Toast from '../components/Toast';
-import { Plus, Pencil, Trash2, Filter } from 'lucide-react';
+import { Plus, Pencil, Trash2, Filter, Search } from 'lucide-react';
 
 const EMPTY_FORM = {
   amount: '', type: 'expense', category_id: '',
@@ -21,7 +21,7 @@ export default function Transactions() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [toast, setToast] = useState(null);
-  const [filter, setFilter] = useState({ type: '', month: '' });
+  const [filter, setFilter] = useState({ type: '', month: '', q: '' });
 
   const load = useCallback(() => {
     setLoading(true);
@@ -82,8 +82,8 @@ export default function Transactions() {
       </div>
 
       {/* Filters */}
-      <div className="card card-sm" style={{ display: 'flex', gap: 16, marginBottom: 20 }}>
-        <Filter size={16} style={{ color: 'var(--text-muted)', alignSelf: 'center' }} />
+      <div className="card card-sm" style={{ display: 'flex', gap: 16, marginBottom: 20, alignItems: 'center' }}>
+        <Filter size={16} style={{ color: 'var(--text-muted)' }} />
         <select className="form-select" style={{ maxWidth: 160 }}
           value={filter.type}
           onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}>
@@ -91,11 +91,19 @@ export default function Transactions() {
           <option value="income">Thu nhập</option>
           <option value="expense">Chi phí</option>
         </select>
-        <input type="month" className="form-input" style={{ maxWidth: 180 }}
+        <input type="month" className="form-input" style={{ maxWidth: 160 }}
           value={filter.month}
           onChange={e => setFilter(f => ({ ...f, month: e.target.value }))}
         />
-        <button className="btn btn-ghost btn-sm" onClick={() => setFilter({ type: '', month: '' })}>
+        <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+          <Search size={14} style={{ position: 'absolute', left: 10, color: 'var(--text-muted)' }} />
+          <input type="text" className="form-input" placeholder="Tìm mô tả..."
+            style={{ paddingLeft: 32 }}
+            value={filter.q}
+            onChange={e => setFilter(f => ({ ...f, q: e.target.value }))}
+          />
+        </div>
+        <button className="btn btn-ghost btn-sm" onClick={() => setFilter({ type: '', month: '', q: '' })}>
           Clear
         </button>
       </div>
