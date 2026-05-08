@@ -34,6 +34,34 @@ export default function Sidebar() {
           Kiểm tra API
         </NavLink>
       </div>
+
+      <div className="sidebar-footer" style={{ 
+        padding: '16px 24px', 
+        borderTop: '1px solid var(--border)',
+        fontSize: '0.75rem',
+        color: 'var(--text-muted)'
+      }}>
+        <div style={{ fontWeight: 600, color: 'var(--text-main)', marginBottom: 4 }}>
+          ĐỒ ÁN DEVOPS
+        </div>
+        <div>Chủ đề: Expense Tracker</div>
+        <div style={{ 
+          marginTop: 8, 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          gap: 6,
+          padding: '4px 8px',
+          borderRadius: 4,
+          background: '#e0f2fe',
+          color: '#0369a1',
+          fontWeight: 700,
+          fontSize: '0.65rem',
+          letterSpacing: '0.05em'
+        }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#0ea5e9' }}></div>
+          DOCKERIZED
+        </div>
+      </div>
     </aside>
   );
 }
