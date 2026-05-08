@@ -93,15 +93,15 @@ exports.remove = async (req, res) => {
 exports.getSummary = async (req, res) => {
   try {
     const { month } = req.query; // format: YYYY-MM
-    const filter = month ? `AND DATE_FORMAT(date, '%Y-%m') = '${month}'` : '';
+    const filter = month ? `AND DATE_FORMAT(t.date, '%Y-%m') = '${month}'` : '';
 
     const [rows] = await db.query(`
       SELECT
-        SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END) AS total_income,
-        SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS total_expense,
+        SUM(CASE WHEN t.type = 'income'  THEN t.amount ELSE 0 END) AS total_income,
+        SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END) AS total_expense,
         COUNT(*) AS transaction_count
-      FROM transactions
-      WHERE status != 'cancelled' ${filter}
+      FROM transactions t
+      WHERE t.status != 'cancelled' ${filter}
     `);
 
     const [byCategory] = await db.query(`
@@ -114,13 +114,13 @@ exports.getSummary = async (req, res) => {
     `);
 
     const [dailyTrend] = await db.query(`
-      SELECT DATE_FORMAT(date, '%d/%m') AS day,
-             SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END) AS income,
-             SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS expense
-      FROM transactions
-      WHERE status != 'cancelled' ${filter}
-      GROUP BY day
-      ORDER BY date ASC
+      SELECT DATE_FORMAT(t.date, '%d/%m') AS day,
+             SUM(CASE WHEN t.type = 'income'  THEN t.amount ELSE 0 END) AS income,
+             SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END) AS expense
+      FROM transactions t
+      WHERE t.status != 'cancelled' ${filter}
+      GROUP BY t.date
+      ORDER BY t.date ASC
     `);
 
     res.json({ success: true, data: { ...rows[0], by_category: byCategory, daily_trend: dailyTrend } });
