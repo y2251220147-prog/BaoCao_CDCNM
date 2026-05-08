@@ -1,12 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
-import {
-  getTransactions, getCategories,
-  createTransaction, updateTransaction, deleteTransaction,
-} from '../services/api';
-import { formatCurrency, formatDate, StatusMap } from '../utils/helpers';
+import { getTransactions, getCategories, createTransaction, updateTransaction, deleteTransaction } from '../services/api';
+import { formatCurrency, formatDate, StatusMap, exportToCSV } from '../utils/helpers';
 import Modal from '../components/Modal';
 import Toast from '../components/Toast';
-import { Plus, Pencil, Trash2, Filter, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Filter, Search, Download } from 'lucide-react';
 
 const EMPTY_FORM = {
   amount: '', type: 'expense', category_id: '',
@@ -46,6 +43,19 @@ export default function Transactions() {
     setShowModal(true);
   };
 
+  const handleExport = () => {
+    const dataToExport = transactions.map(t => ({
+      'ID': t.id,
+      'Mô tả': t.description,
+      'Số tiền': t.amount,
+      'Loại': t.type === 'income' ? 'Thu nhập' : 'Chi phí',
+      'Danh mục': t.category_name,
+      'Ngày': formatDate(t.date),
+      'Trạng thái': StatusMap[t.status]
+    }));
+    exportToCSV(dataToExport, `Giao-dich-${new Date().toISOString().slice(0, 10)}`);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -76,9 +86,14 @@ export default function Transactions() {
     <div>
       <div className="page-header">
         <h1 className="page-title">Giao dịch</h1>
-        <button className="btn btn-primary" onClick={openAdd} id="btn-add-transaction">
-          <Plus size={16} /> Thêm Giao dịch
-        </button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button className="btn btn-ghost" onClick={handleExport} title="Xuất CSV">
+            <Download size={16} /> Xuất CSV
+          </button>
+          <button className="btn btn-primary" onClick={openAdd} id="btn-add-transaction">
+            <Plus size={16} /> Thêm Giao dịch
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
