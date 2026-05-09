@@ -4,6 +4,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+# THÊM DÒNG NÀY ĐỂ SỬA LỖI PERMISSION DENIED
+RUN chmod +x node_modules/.bin/vite
 # We need to build the app, VITE_API_URL can be omitted or passed during build if needed
 RUN npm run build
 
