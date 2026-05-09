@@ -117,3 +117,23 @@ exports.getSummary = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+// ─── GET monthly trends (last 6 months) ───────────────────────────────────────
+exports.getTrends = async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        DATE_FORMAT(date, '%Y-%m') AS month,
+        SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END) AS income,
+        SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS expense
+      FROM transactions
+      WHERE status != 'cancelled'
+        AND date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+      GROUP BY month
+      ORDER BY month ASC
+    `);
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};

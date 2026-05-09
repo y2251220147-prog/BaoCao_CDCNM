@@ -6,7 +6,8 @@ import {
 import { formatCurrency, formatDate, StatusMap } from '../utils/helpers';
 import Modal from '../components/Modal';
 import Toast from '../components/Toast';
-import { Plus, Pencil, Trash2, Filter } from 'lucide-react';
+import { Plus, Pencil, Trash2, Filter, Download } from 'lucide-react';
+import { exportToExcel } from '../utils/export';
 
 const EMPTY_FORM = {
   amount: '', type: 'expense', category_id: '',
@@ -76,9 +77,24 @@ export default function Transactions() {
     <div>
       <div className="page-header">
         <h1 className="page-title">Giao dịch</h1>
-        <button className="btn btn-primary" onClick={openAdd} id="btn-add-transaction">
-          <Plus size={16} /> Thêm Giao dịch
-        </button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button className="btn btn-ghost" onClick={() => {
+            const dataToExport = transactions.map(tx => ({
+              'Mô tả': tx.description || '—',
+              'Danh mục': tx.category_name,
+              'Ngày': formatDate(tx.date),
+              'Loại': tx.type === 'income' ? 'Thu nhập' : 'Chi phí',
+              'Số tiền': tx.amount,
+              'Trạng thái': StatusMap[tx.status]
+            }));
+            exportToExcel(dataToExport, `Giao-dich-${new Date().getTime()}`);
+          }}>
+            <Download size={16} /> Xuất Excel
+          </button>
+          <button className="btn btn-primary" onClick={openAdd} id="btn-add-transaction">
+            <Plus size={16} /> Thêm Giao dịch
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
