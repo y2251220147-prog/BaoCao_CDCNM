@@ -10,16 +10,16 @@ services:
       - "${MYSQL_LOCAL_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   backend:
     build: ./backend
     container_name: expense_backend
     restart: always
     ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
+      - "${BACKEND_PORT}:5000"
     environment:
-      - PORT=${BACKEND_PORT}
+      - PORT=5000
       - NODE_ENV=${NODE_ENV}
       - DB_HOST=mysql-db
       - DB_PORT=3306
@@ -31,7 +31,10 @@ services:
       - mysql-db
 
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      args:
+        - VITE_API_URL=${VITE_API_URL}
     container_name: expense_frontend
     restart: always
     ports:

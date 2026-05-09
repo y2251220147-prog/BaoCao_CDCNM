@@ -1,9 +1,9 @@
 const db = require('../config/db');
 
-// ─── GET all transactions (with filters & search) ──────────────────────────────
+// ─── GET all transactions (with filters) ──────────────────────────────────────
 exports.getAll = async (req, res) => {
   try {
-    const { type, category_id, month, status, q } = req.query;
+    const { type, category_id, month, status } = req.query;
     let sql = `
       SELECT t.*, c.name AS category_name, c.icon, c.color
       FROM transactions t
@@ -16,7 +16,6 @@ exports.getAll = async (req, res) => {
     if (category_id) { sql += ' AND t.category_id = ?'; params.push(category_id); }
     if (status)      { sql += ' AND t.status = ?';      params.push(status); }
     if (month)       { sql += ' AND DATE_FORMAT(t.date, "%Y-%m") = ?'; params.push(month); }
-    if (q)           { sql += ' AND t.description LIKE ?'; params.push(`%${q}%`); }
 
     sql += ' ORDER BY t.date DESC, t.created_at DESC';
 
@@ -46,14 +45,14 @@ exports.getById = async (req, res) => {
 // ─── CREATE transaction ───────────────────────────────────────────────────────
 exports.create = async (req, res) => {
   try {
-    const { amount, type, category_id, description, date, status } = req.body;
+    const { amount, type, category_id, description, date, status, mood } = req.body;
     if (!amount || !type || !category_id || !date)
       return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ: số tiền, loại, danh mục và ngày' });
 
     const [result] = await db.query(
-      `INSERT INTO transactions (amount, type, category_id, description, date, status)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [amount, type, category_id, description || '', date, status || 'completed']
+      `INSERT INTO transactions (amount, type, category_id, description, date, status, mood)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [amount, type, category_id, description || '', date, status || 'completed', mood || null]
     );
     res.status(201).json({ success: true, data: { id: result.insertId } });
   } catch (err) {
@@ -64,12 +63,12 @@ exports.create = async (req, res) => {
 // ─── UPDATE transaction ───────────────────────────────────────────────────────
 exports.update = async (req, res) => {
   try {
-    const { amount, type, category_id, description, date, status } = req.body;
+    const { amount, type, category_id, description, date, status, mood } = req.body;
     const [result] = await db.query(
       `UPDATE transactions
-       SET amount=?, type=?, category_id=?, description=?, date=?, status=?
+       SET amount=?, type=?, category_id=?, description=?, date=?, status=?, mood=?
        WHERE id=?`,
-      [amount, type, category_id, description, date, status, req.params.id]
+      [amount, type, category_id, description, date, status, mood || null, req.params.id]
     );
     if (!result.affectedRows) return res.status(404).json({ success: false, message: 'Không tìm thấy giao dịch' });
     res.json({ success: true, message: 'Cập nhật thành công' });
@@ -93,15 +92,15 @@ exports.remove = async (req, res) => {
 exports.getSummary = async (req, res) => {
   try {
     const { month } = req.query; // format: YYYY-MM
-    const filter = month ? `AND DATE_FORMAT(t.date, '%Y-%m') = '${month}'` : '';
+    const filter = month ? `AND DATE_FORMAT(date, '%Y-%m') = '${month}'` : '';
 
     const [rows] = await db.query(`
       SELECT
-        SUM(CASE WHEN t.type = 'income'  THEN t.amount ELSE 0 END) AS total_income,
-        SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END) AS total_expense,
+        SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END) AS total_income,
+        SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS total_expense,
         COUNT(*) AS transaction_count
-      FROM transactions t
-      WHERE t.status != 'cancelled' ${filter}
+      FROM transactions
+      WHERE status != 'cancelled' ${filter}
     `);
 
     const [byCategory] = await db.query(`
@@ -113,17 +112,7 @@ exports.getSummary = async (req, res) => {
       ORDER BY total DESC
     `);
 
-    const [dailyTrend] = await db.query(`
-      SELECT DATE_FORMAT(t.date, '%d/%m') AS day,
-             SUM(CASE WHEN t.type = 'income'  THEN t.amount ELSE 0 END) AS income,
-             SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END) AS expense
-      FROM transactions t
-      WHERE t.status != 'cancelled' ${filter}
-      GROUP BY t.date
-      ORDER BY t.date ASC
-    `);
-
-    res.json({ success: true, data: { ...rows[0], by_category: byCategory, daily_trend: dailyTrend } });
+    res.json({ success: true, data: { ...rows[0], by_category: byCategory } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

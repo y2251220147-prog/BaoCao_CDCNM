@@ -7,7 +7,8 @@ const errorHandler = require('./middleware/errorHandler');
 const transactionRoutes = require('./routes/transactions');
 const categoryRoutes    = require('./routes/categories');
 const budgetRoutes      = require('./routes/budgets');
-const goalRoutes        = require('./routes/goals');
+const challengeRoutes   = require('./routes/challenges');
+const moodRoutes        = require('./routes/mood');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
@@ -16,10 +17,9 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
 app.use(express.json());
 
-// ── Health-check endpoint (REQUIRED for DevOps) ─────────────────────────────
+// ── Health-check endpoint (REQUIRED) ──────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({
-    ok:        true,
     status:    'ok',
     timestamp: new Date().toISOString(),
     service:   'expense-tracker-api',
@@ -31,7 +31,8 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories',   categoryRoutes);
 app.use('/api/budgets',      budgetRoutes);
-app.use('/api/goals',        goalRoutes);
+app.use('/api/challenges',   challengeRoutes);
+app.use('/api/mood',         moodRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
 app.use((_req, res) => {

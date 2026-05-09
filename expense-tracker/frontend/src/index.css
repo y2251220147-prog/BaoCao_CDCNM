@@ -20,18 +20,6 @@
   font-family: 'Inter', system-ui, sans-serif;
 }
 
-[data-theme='dark'] {
-  --bg:          #0f172a;
-  --bg-card:     #1e293b;
-  --bg-card2:    #334155;
-  --border:      rgba(255, 255, 255, 0.06);
-  --accent:      #818cf8;
-  --accent-soft: rgba(129, 140, 248, 0.1);
-  --text:        #f1f5f9;
-  --text-muted:  #94a3b8;
-  --shadow:      0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -203,4 +191,106 @@ tbody td { padding: 14px 16px; font-size: 0.9rem; border-bottom: 1px solid var(-
   .stats-grid   { grid-template-columns: 1fr; }
   .charts-grid  { grid-template-columns: 1fr; }
   .modal-form-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Sidebar highlight nav (new features) ─────────────────── */
+.nav-item-highlight {
+  position: relative;
+}
+.nav-item-highlight::after {
+  content: 'NEW';
+  position: absolute;
+  right: 10px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), #ec4899);
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 99px;
+  letter-spacing: .5px;
+}
+
+/* ── Mood Picker (in Transaction form) ───────────────────────── */
+.mood-picker {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;
+}
+.mood-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 14px; border-radius: 12px; border: 2px solid var(--border);
+  background: var(--bg-card2); cursor: pointer; transition: all 0.2s;
+  font-family: inherit; min-width: 68px;
+}
+.mood-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+.mood-btn.selected {
+  border-color: var(--accent); background: var(--accent-soft);
+  box-shadow: 0 4px 12px rgba(79,70,229,0.2);
+  transform: translateY(-2px) scale(1.05);
+}
+.mood-emoji { font-size: 1.5rem; line-height: 1; }
+.mood-label { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); }
+.mood-btn.selected .mood-label { color: var(--accent); }
+
+/* ── Challenge Cards Grid ────────────────────────────────────── */
+.challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+.challenge-card {
+  position: relative; overflow: hidden;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.challenge-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.1); }
+.challenge-card.completed { background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); }
+
+.challenge-status-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 99px;
+  font-size: 0.75rem; font-weight: 700;
+}
+.challenge-reward-box {
+  margin-top: 14px; padding: 10px 14px;
+  background: var(--bg-card2); border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.challenge-badge-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: 99px; font-size: 0.8rem; font-weight: 700;
+  background: linear-gradient(135deg, rgba(79,70,229,0.12), rgba(236,72,153,0.12));
+  color: var(--accent); border: 1px solid rgba(79,70,229,0.2);
+}
+.challenge-completed-overlay {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 14px; padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.08));
+  border-radius: 10px; color: #059669; font-weight: 700; font-size: 0.88rem;
+}
+
+/* ── Mood Distribution Grid ──────────────────────────────────── */
+.mood-dist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px; margin-bottom: 4px;
+}
+.mood-dist-card {
+  text-align: center; padding: 20px 16px; cursor: pointer;
+  transition: all 0.25s; border: 2px solid var(--border);
+}
+.mood-dist-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.mood-dist-card.mood-active { border-width: 2px; box-shadow: 0 8px 24px rgba(79,70,229,0.15); }
+
+/* ── Mood insight cards ──────────────────────────────────────── */
+.mood-insight-card {
+  border-left-width: 4px !important;
+}
+
+/* ── Mood category breakdown list ───────────────────────────── */
+.mood-cat-list { display: flex; flex-direction: column; gap: 12px; }
+.mood-cat-row {
+  display: flex; align-items: center; gap: 14px;
+}
+
+@media (max-width: 768px) {
+  .challenge-grid { grid-template-columns: 1fr; }
+  .mood-dist-grid { grid-template-columns: repeat(3,1fr); }
+  .mood-insights-row { grid-template-columns: 1fr !important; }
 }

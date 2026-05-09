@@ -1,10 +1,14 @@
 # Stage 1: Build the React application
-FROM node:18-alpine AS build
+FROM node:18-alpine as build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-# We need to build the app, VITE_API_URL can be omitted or passed during build if needed
+
+# Pass build arguments
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN npm run build
 
 # Stage 2: Serve the application with Nginx

@@ -1,14 +1,26 @@
 import { useEffect, useState, useCallback } from 'react';
-import { getTransactions, getCategories, createTransaction, updateTransaction, deleteTransaction } from '../services/api';
-import { formatCurrency, formatDate, StatusMap, exportToCSV } from '../utils/helpers';
+import {
+  getTransactions, getCategories,
+  createTransaction, updateTransaction, deleteTransaction,
+} from '../services/api';
+import { formatCurrency, formatDate, StatusMap } from '../utils/helpers';
 import Modal from '../components/Modal';
 import Toast from '../components/Toast';
-import { Plus, Pencil, Trash2, Filter, Search, Download } from 'lucide-react';
+import { Plus, Pencil, Trash2, Filter } from 'lucide-react';
 
 const EMPTY_FORM = {
   amount: '', type: 'expense', category_id: '',
   description: '', date: new Date().toISOString().slice(0, 10), status: 'completed',
+  mood: '',
 };
+
+const MOODS = [
+  { value: 'happy',   emoji: '😊', label: 'Vui vẻ' },
+  { value: 'sad',     emoji: '😭', label: 'Buồn' },
+  { value: 'angry',   emoji: '😡', label: 'Tức giận' },
+  { value: 'tired',   emoji: '😴', label: 'Mệt mỏi' },
+  { value: 'neutral', emoji: '😐', label: 'Bình thường' },
+];
 
 export default function Transactions() {
   const [transactions, setTransactions] = useState([]);
@@ -18,7 +30,7 @@ export default function Transactions() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [toast, setToast] = useState(null);
-  const [filter, setFilter] = useState({ type: '', month: '', q: '' });
+  const [filter, setFilter] = useState({ type: '', month: '' });
 
   const load = useCallback(() => {
     setLoading(true);
@@ -38,22 +50,10 @@ export default function Transactions() {
     setEditing(tx.id);
     setForm({
       amount: tx.amount, type: tx.type, category_id: tx.category_id,
-      description: tx.description, date: tx.date?.slice(0, 10), status: tx.status
+      description: tx.description, date: tx.date?.slice(0, 10), status: tx.status,
+      mood: tx.mood || '',
     });
     setShowModal(true);
-  };
-
-  const handleExport = () => {
-    const dataToExport = transactions.map(t => ({
-      'ID': t.id,
-      'Mô tả': t.description,
-      'Số tiền': t.amount,
-      'Loại': t.type === 'income' ? 'Thu nhập' : 'Chi phí',
-      'Danh mục': t.category_name,
-      'Ngày': formatDate(t.date),
-      'Trạng thái': StatusMap[t.status]
-    }));
-    exportToCSV(dataToExport, `Giao-dich-${new Date().toISOString().slice(0, 10)}`);
   };
 
   const handleSubmit = async (e) => {
@@ -86,19 +86,14 @@ export default function Transactions() {
     <div>
       <div className="page-header">
         <h1 className="page-title">Giao dịch</h1>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <button className="btn btn-ghost" onClick={handleExport} title="Xuất CSV">
-            <Download size={16} /> Xuất CSV
-          </button>
-          <button className="btn btn-primary" onClick={openAdd} id="btn-add-transaction">
-            <Plus size={16} /> Thêm Giao dịch
-          </button>
-        </div>
+        <button className="btn btn-primary" onClick={openAdd} id="btn-add-transaction">
+          <Plus size={16} /> Thêm Giao dịch
+        </button>
       </div>
 
       {/* Filters */}
-      <div className="card card-sm" style={{ display: 'flex', gap: 16, marginBottom: 20, alignItems: 'center' }}>
-        <Filter size={16} style={{ color: 'var(--text-muted)' }} />
+      <div className="card card-sm" style={{ display: 'flex', gap: 16, marginBottom: 20 }}>
+        <Filter size={16} style={{ color: 'var(--text-muted)', alignSelf: 'center' }} />
         <select className="form-select" style={{ maxWidth: 160 }}
           value={filter.type}
           onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}>
@@ -106,19 +101,11 @@ export default function Transactions() {
           <option value="income">Thu nhập</option>
           <option value="expense">Chi phí</option>
         </select>
-        <input type="month" className="form-input" style={{ maxWidth: 160 }}
+        <input type="month" className="form-input" style={{ maxWidth: 180 }}
           value={filter.month}
           onChange={e => setFilter(f => ({ ...f, month: e.target.value }))}
         />
-        <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
-          <Search size={14} style={{ position: 'absolute', left: 10, color: 'var(--text-muted)' }} />
-          <input type="text" className="form-input" placeholder="Tìm mô tả..."
-            style={{ paddingLeft: 32 }}
-            value={filter.q}
-            onChange={e => setFilter(f => ({ ...f, q: e.target.value }))}
-          />
-        </div>
-        <button className="btn btn-ghost btn-sm" onClick={() => setFilter({ type: '', month: '', q: '' })}>
+        <button className="btn btn-ghost btn-sm" onClick={() => setFilter({ type: '', month: '' })}>
           Clear
         </button>
       </div>
@@ -135,7 +122,7 @@ export default function Transactions() {
               <thead>
                 <tr>
                   <th>#</th><th>Mô tả</th><th>Danh mục</th>
-                  <th>Ngày</th><th>Trạng thái</th><th>Số tiền</th><th>Thao tác</th>
+                  <th>Ngày</th><th>Cảm xúc</th><th>Trạng thái</th><th>Số tiền</th><th>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -152,6 +139,9 @@ export default function Transactions() {
                       </span>
                     </td>
                     <td style={{ color: 'var(--text-muted)' }}>{formatDate(tx.date)}</td>
+                    <td style={{ fontSize: '1.2rem' }}>
+                      {MOODS.find(m => m.value === tx.mood)?.emoji || <span style={{color:'var(--text-muted)',fontSize:'0.8rem'}}>—</span>}
+                    </td>
                     <td><span className={`badge badge-${tx.status}`}>{StatusMap[tx.status]}</span></td>
                     <td className={`amount-${tx.type}`}>
                       {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
@@ -223,6 +213,23 @@ export default function Transactions() {
                 <input type="text" className="form-input" placeholder="Tùy chọn…"
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+              </div>
+              <div className="form-group full">
+                <label className="form-label">😶 Hôm nay bạn cảm thấy thế nào?</label>
+                <div className="mood-picker">
+                  {MOODS.map(m => (
+                    <button
+                      key={m.value}
+                      type="button"
+                      className={`mood-btn${form.mood === m.value ? ' selected' : ''}`}
+                      onClick={() => setForm(f => ({ ...f, mood: f.mood === m.value ? '' : m.value }))}
+                      title={m.label}
+                    >
+                      <span className="mood-emoji">{m.emoji}</span>
+                      <span className="mood-label">{m.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="modal-actions">

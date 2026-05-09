@@ -1,6 +1,5 @@
 node_modules
 dist
-.env
+build
 .git
-.gitignore
-README.md
+.env
