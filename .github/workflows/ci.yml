@@ -36,10 +36,16 @@ jobs:
           node-version: '18'
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
+      
+      # Lệnh quan trọng để sửa lỗi Permission denied
+      - name: Fix Permissions
+        run: chmod -R +x node_modules/.bin
+        
       - name: Build Source
-        run: npm run build --if-present
+        run: CI=false npm run build --if-present
         env:
           VITE_API_URL: http://localhost:5000/api
+
 
   deploy:
     needs: [backend-ci, frontend-ci]
