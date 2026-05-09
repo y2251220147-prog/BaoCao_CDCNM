@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: ./expense-tracker/backend
     steps:
       - uses: actions/checkout@v3
       - name: Setup Node.js
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend
+        working-directory: ./expense-tracker/frontend
     steps:
       - uses: actions/checkout@v3
       - name: Setup Node.js
@@ -40,36 +40,26 @@ jobs:
         env:
           VITE_API_URL: http://localhost:5000/api
 
-  # NEW: Continuous Deployment Job
   deploy:
     needs: [backend-ci, frontend-ci]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Build and Push Backend
         uses: docker/build-push-action@v4
         with:
-          context: ./backend
+          context: ./expense-tracker/backend
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/expense-tracker-backend:latest
-
       - name: Build and Push Frontend
         uses: docker/build-push-action@v4
         with:
-          context: ./frontend
+          context: ./expense-tracker/frontend
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/expense-tracker-frontend:latest
-
-      - name: Deploy to Production
-        run: |
-          echo "🚀 Simulating deployment to production server..."
-          # Here you would typically trigger a webhook or use an SSH action to pull new images and restart containers
-          # Example: curl -X POST ${{ secrets.DEPLOY_HOOK_URL }}
