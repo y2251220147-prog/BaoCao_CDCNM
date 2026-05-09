@@ -4,8 +4,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-# THÊM DÒNG NÀY ĐỂ SỬA LỖI PERMISSION DENIED
-RUN chmod +x node_modules/.bin/vite
+# Ensure build tools in .bin are executable in Docker build context
+RUN find node_modules/.bin -maxdepth 1 -type f -exec chmod +x {} +
 # We need to build the app, VITE_API_URL can be omitted or passed during build if needed
 RUN npm run build
 
