@@ -6,16 +6,19 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "lint": "echo 'No lint specified'",
-    "test": "echo 'No tests specified'"
+    "lint": "eslint .",
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "morgan": "^1.10.1",
     "mysql2": "^3.10.0"
   },
   "devDependencies": {
+    "eslint": "^10.3.0",
+    "jest": "^30.4.2",
     "nodemon": "^3.1.4"
   },
   "engines": {
