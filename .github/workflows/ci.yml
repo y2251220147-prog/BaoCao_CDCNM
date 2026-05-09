@@ -18,10 +18,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install Dependencies
-        run: npm install
-      - name: Run Checks
-        run: echo "Backend checks passed"
+      - run: npm install
+      - run: echo "Backend checks passed"
 
   frontend-ci:
     runs-on: ubuntu-latest
@@ -34,30 +32,26 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install Dependencies
-        run: npm install --legacy-peer-deps
-      
-      # Lệnh quan trọng để sửa lỗi Permission denied
-      - name: Fix Permissions
-        run: chmod -R +x node_modules/.bin
-        
+      - run: npm install --legacy-peer-deps
       - name: Build Source
         run: CI=false npm run build --if-present
         env:
           VITE_API_URL: http://localhost:5000/api
 
-
   deploy:
     needs: [backend-ci, frontend-ci]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    env:
+      # Sử dụng secret, nếu trống thì dùng mặc định 'nguyenhuyduc' để tránh lỗi tag
+      DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME || 'nguyenhuyduc' }}
     steps:
       - uses: actions/checkout@v3
       
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ env.DOCKER_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       
       - name: Build and Push Backend
@@ -65,11 +59,11 @@ jobs:
         with:
           context: ./expense-tracker/backend
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/expense-tracker-backend:latest
+          tags: ${{ env.DOCKER_USER }}/expense-tracker-backend:latest
       
       - name: Build and Push Frontend
         uses: docker/build-push-action@v4
         with:
           context: ./expense-tracker/frontend
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/expense-tracker-frontend:latest
+          tags: ${{ env.DOCKER_USER }}/expense-tracker-frontend:latest
