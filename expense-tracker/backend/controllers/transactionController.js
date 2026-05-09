@@ -92,27 +92,34 @@ exports.remove = async (req, res) => {
 exports.getSummary = async (req, res) => {
   try {
     const { month } = req.query; // format: YYYY-MM
-    const filter = month ? `AND DATE_FORMAT(date, '%Y-%m') = '${month}'` : '';
-
-    const [rows] = await db.query(`
+    let sqlSummary = `
       SELECT
         SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END) AS total_income,
         SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS total_expense,
         COUNT(*) AS transaction_count
       FROM transactions
-      WHERE status != 'cancelled' ${filter}
-    `);
-
-    const [byCategory] = await db.query(`
+      WHERE status != 'cancelled'
+    `;
+    let sqlByCategory = `
       SELECT c.name, c.color, c.icon, t.type,
              SUM(t.amount) AS total
       FROM transactions t JOIN categories c ON c.id = t.category_id
-      WHERE t.status != 'cancelled' ${filter}
-      GROUP BY c.id, t.type
-      ORDER BY total DESC
-    `);
+      WHERE t.status != 'cancelled'
+    `;
+    const params = [];
 
-    res.json({ success: true, data: { ...rows[0], by_category: byCategory } });
+    if (month) {
+      sqlSummary += ' AND DATE_FORMAT(date, "%Y-%m") = ?';
+      sqlByCategory += ' AND DATE_FORMAT(t.date, "%Y-%m") = ?';
+      params.push(month);
+    }
+
+    sqlByCategory += ' GROUP BY c.id, t.type ORDER BY total DESC';
+
+    const [[summary]] = await db.query(sqlSummary, params);
+    const [byCategory] = await db.query(sqlByCategory, params);
+
+    res.json({ success: true, data: { ...summary, by_category: byCategory } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
