@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express      = require('express');
 const cors         = require('cors');
+const morgan       = require('morgan');
 const errorHandler = require('./middleware/errorHandler');
 
 // ── Import routes ──────────────────────────────────────────────────────────────
@@ -14,6 +15,7 @@ const PORT = process.env.PORT || 5000;
 // ── Middleware ─────────────────────────────────────────────────────────────────
 app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
 app.use(express.json());
+app.use(morgan('dev')); // Detailed request logging
 
 // ── Health-check endpoint (REQUIRED) ──────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
