@@ -2,7 +2,27 @@ import { useEffect, useState } from 'react';
 import { getCategories, createCategory, deleteCategory } from '../services/api';
 import Modal from '../components/Modal';
 import Toast from '../components/Toast';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Briefcase, Code, TrendingUp, Utensils, Car, Home, Smile, Heart, Book, ShoppingBag, MoreHorizontal, Tag } from 'lucide-react';
+
+const IconMap = {
+  'briefcase': Briefcase,
+  'code': Code,
+  'trending-up': TrendingUp,
+  'utensils': Utensils,
+  'car': Car,
+  'home': Home,
+  'smile': Smile,
+  'heart': Heart,
+  'book': Book,
+  'shopping-bag': ShoppingBag,
+  'more-horizontal': MoreHorizontal,
+  'tag': Tag
+};
+
+const CategoryIcon = ({ name, color, size = 20 }) => {
+  const Icon = IconMap[name] || Tag;
+  return <Icon size={size} color={color} />;
+};
 
 const EMPTY = { name: '', icon: 'tag', color: '#6366f1', type: 'expense' };
 
@@ -57,9 +77,8 @@ export default function Categories() {
               <div style={{
                 width: 36, height: 36, borderRadius: 10,
                 background: `${c.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1.1rem',
               }}>
-                💡
+                <CategoryIcon name={c.icon} color={c.color} size={18} />
               </div>
               <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{c.name}</span>
             </div>

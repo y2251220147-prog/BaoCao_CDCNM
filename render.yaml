@@ -1,0 +1,30 @@
+# render.yaml — Cấu hình auto-deploy cho Render.com
+# Đặt file này ở ROOT của repository (cùng cấp với thư mục expense-tracker)
+# Render sẽ tự nhận diện và dùng file này khi bạn kết nối repo
+
+services:
+  - type: web
+    name: expense-tracker-backend
+    runtime: node
+    rootDir: expense-tracker/backend
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # Điền các biến sau trong Dashboard của Render (không lưu vào file này!)
+      - key: DB_HOST
+        sync: false       # ← Render sẽ hỏi bạn điền thủ công
+      - key: DB_PORT
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: CLIENT_URL
+        sync: false       # ← Điền URL Vercel của bạn

@@ -35,7 +35,9 @@ export default function Dashboard() {
   const income  = parseFloat(summary?.total_income  || 0);
   const expense = parseFloat(summary?.total_expense || 0);
   const balance = income - expense;
-  const pieData = (summary?.by_category || []).map(c => ({ name: c.name, value: parseFloat(c.total) }));
+  const pieData = (summary?.by_category || [])
+    .filter(c => c.type === 'expense')
+    .map(c => ({ name: c.name, value: parseFloat(c.total) }));
 
   const statCards = [
     { label: 'Tổng số dư', value: balance, icon: Wallet,      color: '#6366f1', cls: balance >= 0 ? 'amount-income' : 'amount-expense' },

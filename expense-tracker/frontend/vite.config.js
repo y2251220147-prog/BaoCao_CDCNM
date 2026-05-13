@@ -1,10 +1,17 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { existsSync } from 'fs';
+import { resolve } from 'path';
+
+// Đọc .env từ thư mục cha nếu tồn tại (local + Docker),
+// fallback về thư mục hiện tại (Vercel build environment)
+const parentEnvExists = existsSync(resolve(__dirname, '../.env'));
 
 export default defineConfig({
   plugins: [react()],
+  envDir: parentEnvExists ? '../' : './',
   server: {
-    port: 5173,
+    port: 3000,
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
@@ -13,3 +20,4 @@ export default defineConfig({
     },
   },
 });
+

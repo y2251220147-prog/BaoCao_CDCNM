@@ -1,27 +1,30 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
+// Dùng VITE_API_URL nếu có (Vercel/Render), fallback về '/api' nếu dùng Docker + Nginx proxy
+const api = axios.create({
+    baseURL: import.meta.env.VITE_API_URL || '/api',
+});
 
 // ── Transactions ──────────────────────────────────────────────────────────────
 export const getTransactions = (params) => api.get('/transactions', { params });
-export const getTransaction  = (id)     => api.get(`/transactions/${id}`);
+export const getTransaction = (id) => api.get(`/transactions/${id}`);
 export const createTransaction = (data) => api.post('/transactions', data);
 export const updateTransaction = (id, data) => api.put(`/transactions/${id}`, data);
-export const deleteTransaction = (id)   => api.delete(`/transactions/${id}`);
-export const getSummary        = (params) => api.get('/transactions/summary', { params });
-export const getTrends         = ()       => api.get('/transactions/trends');
+export const deleteTransaction = (id) => api.delete(`/transactions/${id}`);
+export const getSummary = (params) => api.get('/transactions/summary', { params });
+export const getTrends = () => api.get('/transactions/trends');
 
 // ── Categories ────────────────────────────────────────────────────────────────
-export const getCategories    = ()       => api.get('/categories');
-export const createCategory   = (data)   => api.post('/categories', data);
-export const deleteCategory   = (id)     => api.delete(`/categories/${id}`);
+export const getCategories = () => api.get('/categories');
+export const createCategory = (data) => api.post('/categories', data);
+export const deleteCategory = (id) => api.delete(`/categories/${id}`);
 
 // ── Budgets ───────────────────────────────────────────────────────────────────
-export const getBudgets       = (params) => api.get('/budgets', { params });
-export const upsertBudget     = (data)   => api.post('/budgets', data);
-export const deleteBudget     = (id)     => api.delete(`/budgets/${id}`);
+export const getBudgets = (params) => api.get('/budgets', { params });
+export const upsertBudget = (data) => api.post('/budgets', data);
+export const deleteBudget = (id) => api.delete(`/budgets/${id}`);
 
 // ── Health-check ──────────────────────────────────────────────────────────────
-export const checkHealth      = ()       => api.get('/health');
+export const checkHealth = () => api.get('/health');
 
 export default api;

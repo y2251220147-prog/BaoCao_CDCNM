@@ -6,8 +6,11 @@ RUN npm install
 COPY . .
 # THÊM DÒNG NÀY ĐỂ SỬA LỖI PERMISSION DENIED
 RUN chmod +x node_modules/.bin/vite
-# We need to build the app, VITE_API_URL can be omitted or passed during build if needed
+# We need to build the app
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
+
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:alpine

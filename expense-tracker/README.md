@@ -68,9 +68,10 @@ npm run dev            # Chạy trên port 5000
 ```bash
 cd frontend
 npm install
-npm run dev            # Chạy trên port 5173
+npm run dev            # Chạy trên port 3000
 ```
 
 ### 4. Kiểm tra
-- Frontend: http://localhost:5173
-- Health: http://localhost:5000/api/health
+- Frontend: http://localhost:3000  
+- Health:   http://localhost:5000/api/health
+

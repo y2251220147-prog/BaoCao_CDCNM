@@ -20,8 +20,10 @@ jobs:
           node-version: '18'
       - name: Install Dependencies
         run: npm install
-      - name: Run Checks
-        run: echo "Backend checks passed"
+      - name: Run Lint
+        run: npm run lint
+      - name: Run Tests
+        run: npm test
 
   frontend-ci:
     runs-on: ubuntu-latest
@@ -41,10 +43,12 @@ jobs:
       - name: Fix Permissions
         run: chmod -R +x node_modules/.bin
         
+      - name: Run Lint
+        run: npm run lint
+      - name: Run Tests
+        run: npm test
       - name: Build Source
         run: CI=false npm run build --if-present
-        env:
-          VITE_API_URL: http://localhost:5000/api
 
 
   deploy:
