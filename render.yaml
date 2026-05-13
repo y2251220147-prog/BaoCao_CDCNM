@@ -7,7 +7,7 @@ services:
     name: expense-tracker-backend
     runtime: node
     rootDir: expense-tracker/backend
-    buildCommand: npm install
+    buildCommand: npm install --omit=dev
     startCommand: node server.js
     plan: free
     envVars:
