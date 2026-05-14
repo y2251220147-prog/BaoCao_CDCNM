@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "build": "echo 'No build step required for backend'",
     "lint": "eslint .",
     "test": "jest --passWithNoTests"
   },
@@ -17,7 +18,7 @@
     "mysql2": "^3.10.0"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.10.0",
     "eslint": "^9.10.0",
     "globals": "^17.6.0",
     "jest": "^30.4.2",
